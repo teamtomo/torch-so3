@@ -31,12 +31,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
 # add your package dependencies here
 dependencies = [
     "torch",
+    "numpy",
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
