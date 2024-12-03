@@ -1,4 +1,4 @@
-"""Generate unfirform 3D euler angles (ZYZ)."""
+"""Generate uniform 3D euler angles (ZYZ)."""
 
 from importlib.metadata import PackageNotFoundError, version
 
