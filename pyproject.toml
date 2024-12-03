@@ -37,6 +37,7 @@ classifiers = [
 # add your package dependencies here
 dependencies = [
     "torch",
+    "numpy",
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
