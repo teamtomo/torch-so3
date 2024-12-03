@@ -25,6 +25,7 @@ def get_uniform_euler_angles(
             where list length is the number of range sets,
             and N is the number of Euler angles in each set.
     """
+    # Set default ranges if not provided
     if phi_ranges is None:
         phi_ranges = torch.tensor([[-180, 180]], dtype=torch.float64)
     if theta_ranges is None:
@@ -56,6 +57,14 @@ def get_uniform_euler_angles(
             theta_range[0], theta_range[1], n_theta, dtype=torch.float64
         )
         psi_all = torch.linspace(psi_range[0], psi_range[1], n_psi, dtype=torch.float64)
+        # Wrap theta values around to the range of 0 to pi
+        theta_all = torch.where(theta_all < 0, theta_all * -1, theta_all)
+        theta_all = torch.where(
+            theta_all > torch.pi, 2 * torch.pi - theta_all, theta_all
+        )
+        # Wrap psi values around to the range of -pi to pi
+        psi_all = torch.where(psi_all < -torch.pi, psi_all + 2 * torch.pi, psi_all)
+        psi_all = torch.where(psi_all > torch.pi, psi_all - 2 * torch.pi, psi_all)
 
         # Generate phi values using Hopf fibration
         phi_max_step = phi_range[1] - phi_range[0]
@@ -69,6 +78,13 @@ def get_uniform_euler_angles(
             this_theta = theta_all[j]
             phi_array = torch.arange(
                 phi_range[0], phi_range[1], phi_step, dtype=torch.float64
+            )
+            # Wrap phi values around to the range of -pi to pi
+            phi_array = torch.where(
+                phi_array < -torch.pi, phi_array + 2 * torch.pi, phi_array
+            )
+            phi_array = torch.where(
+                phi_array > torch.pi, phi_array - 2 * torch.pi, phi_array
             )
             # Create all combinations using meshgrid
             grid1, grid2, grid3 = torch.meshgrid(
