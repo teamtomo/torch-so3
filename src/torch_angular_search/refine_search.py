@@ -4,6 +4,8 @@ import torch
 
 from torch_angular_search.hopf_angles import get_uniform_euler_angles
 
+eps = 1e-10
+
 
 def refine_euler_angles(
     best_angles: torch.Tensor,
@@ -35,7 +37,6 @@ def refine_euler_angles(
     """
     if coarse_phi_range is None:
         coarse_phi_range = torch.tensor([-180, 180], dtype=torch.float64)
-    eps = 1e-10
     # Convert angles to radians
     coarse_in_plane_step_tensor = torch.deg2rad(
         torch.tensor(coarse_in_plane_step, dtype=torch.float64)
@@ -54,18 +55,18 @@ def refine_euler_angles(
     fine_theta_ranges = (
         best_angles[:, 1]
         - coarse_out_of_plane_step_tensor
-        + fine_out_of_plane_step_tensor,
+        + fine_out_of_plane_step_tensor,  # so don't overlap old values
         best_angles[:, 1]
         + coarse_out_of_plane_step_tensor
-        - fine_out_of_plane_step_tensor
-        - eps,
+        - fine_out_of_plane_step_tensor,  # so don't overlap old values
     )
     fine_psi_ranges = (
-        best_angles[:, 2] - coarse_in_plane_step_tensor + fine_in_plane_step_tensor,
+        best_angles[:, 2]
+        - coarse_in_plane_step_tensor
+        + fine_in_plane_step_tensor,  # so don't overlap old values
         best_angles[:, 2]
         + coarse_in_plane_step_tensor
-        - fine_in_plane_step_tensor
-        - eps,
+        - fine_in_plane_step_tensor,  # so don't overlap old values
     )
 
     # Stack the tensors to create shape (n, 2)
@@ -81,10 +82,15 @@ def refine_euler_angles(
     )
     phi_step_all = phi_max_step / torch.round(phi_max_step / phi_step_all)
     # get phi range
-    fine_phi_ranges = (
-        best_angles[:, 0] - phi_step_all + fine_out_of_plane_step_tensor,
-        best_angles[:, 0] + phi_step_all - fine_out_of_plane_step_tensor - eps,
+    phi_step_all_fine = torch.clamp(
+        torch.abs(fine_out_of_plane_step_tensor / torch.sin(best_angles[:, 1])),
+        max=phi_max_step,
     )
+    phi_step_all_fine = phi_max_step / torch.round(phi_max_step / phi_step_all_fine)
+    fine_phi_ranges = (
+        best_angles[:, 0] - phi_step_all + phi_step_all_fine,
+        best_angles[:, 0] + phi_step_all - phi_step_all_fine + eps,
+    )  # plus eps to make endpoint inclusive
     fine_phi_ranges_tensor = torch.rad2deg(torch.stack(fine_phi_ranges, dim=1))
 
     # Now get angles using Hopf fibration

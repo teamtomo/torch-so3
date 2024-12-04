@@ -78,7 +78,7 @@ def get_uniform_euler_angles(
             this_theta = theta_all[j]
             phi_array = torch.arange(
                 phi_range[0], phi_range[1], phi_step, dtype=torch.float64
-            )
+            )  # eps effectively makes endpoint inclusive
             # Wrap phi values around to the range of -pi to pi
             phi_array = torch.where(
                 phi_array < -torch.pi, phi_array + 2 * torch.pi, phi_array

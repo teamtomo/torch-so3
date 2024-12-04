@@ -16,4 +16,4 @@ def test_refine_angles():
     best_angles = torch.tensor([[87, 87, 87], [45, 45, 45]])
     angles_refined = refine_euler_angles(best_angles)
     assert angles_refined[0].shape[0] == 37632
-    assert angles_refined[1].shape[0] == 39744
+    assert angles_refined[1].shape[0] == 39168
