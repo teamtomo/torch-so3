@@ -7,6 +7,59 @@ from torch_angular_search.hopf_angles import get_uniform_euler_angles
 eps = 1e-10
 
 
+def increase_resolution(
+    coarse_in_plane_step: float = 2.5,
+    coarse_out_of_plane_step: float = 1.5,
+    fine_in_plane_step: float = 0.1,
+    fine_out_of_plane_step: float = 0.1,
+) -> list:
+    """
+    Search around a pole at higher resolution.
+
+    Args:
+        coarse_in_plane_step (float):
+            Coarse step size for in-plane angles (phi, psi) in degrees.
+        coarse_out_of_plane_step (float):
+            Coarse step size for out-of-plane angle (theta) in degrees.
+        fine_in_plane_step (float):
+            Finer step size for in-plane angles (phi, psi) in degrees.
+        fine_out_of_plane_step (float):
+            Finer step size for out-of-plane angle (theta) in degrees.
+
+    Returns
+    -------
+        list: List of torch tensors of shape (N, 3) in degrees,
+                      where N is the number of refined angles per best angle.
+    """
+    fine_theta_range = (
+        -coarse_out_of_plane_step
+        + fine_out_of_plane_step,  # so don't overlap old values
+        coarse_out_of_plane_step
+        - fine_out_of_plane_step,  # so don't overlap old values
+    )
+    fine_psi_range = (
+        -coarse_in_plane_step + fine_in_plane_step,  # so don't overlap old values
+        coarse_in_plane_step - fine_in_plane_step,  # so don't overlap old values
+    )
+
+    phi_range = (0, 2 * torch.pi)
+
+    # Now get angles using Hopf fibration
+    euler_angles = get_uniform_euler_angles(
+        in_plane_step=fine_in_plane_step,
+        out_of_plane_step=fine_out_of_plane_step,
+        phi_ranges=torch.tensor([phi_range]),
+        theta_ranges=torch.tensor([fine_theta_range]),
+        psi_ranges=torch.tensor([fine_psi_range]),
+    )
+
+    return euler_angles
+
+
+'''
+This is deprecated. Not fully deleted yet.
+# I want to change this so instead of best angle, it just generates angles
+# around a pole. It is moved to best by rotation matrix
 def refine_euler_angles(
     best_angles: torch.Tensor,
     coarse_in_plane_step: float = 2.5,
@@ -29,6 +82,8 @@ def refine_euler_angles(
             Finer step size for in-plane angles (phi, psi) in degrees.
         fine_out_of_plane_step (float):
             Finer step size for out-of-plane angle (theta) in degrees.
+        coarse_phi_range (torch.Tensor):
+            Range of coarse phi angles in degrees.
 
     Returns
     -------
@@ -103,3 +158,4 @@ def refine_euler_angles(
     )
 
     return euler_angles
+'''
