@@ -8,8 +8,8 @@ eps = 1e-10
 
 
 def increase_resolution(
-    coarse_in_plane_step: float = 2.5,
-    coarse_out_of_plane_step: float = 1.5,
+    coarse_in_plane_step: float = 1.5,
+    coarse_out_of_plane_step: float = 2.5,
     fine_in_plane_step: float = 0.1,
     fine_out_of_plane_step: float = 0.1,
 ) -> list:
@@ -42,7 +42,8 @@ def increase_resolution(
         coarse_in_plane_step - fine_in_plane_step,  # so don't overlap old values
     )
 
-    phi_range = (0, 2 * torch.pi)
+    # Shouldn't need to run phi range for refined angles
+    phi_range = (0, eps)
 
     # Now get angles using Hopf fibration
     euler_angles = get_uniform_euler_angles(

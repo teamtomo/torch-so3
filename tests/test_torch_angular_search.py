@@ -13,7 +13,7 @@ def test_angle_generator():
 def test_increase_resolution():
     angles_increased = increase_resolution()
     print(f"shape pole increase res: {angles_increased[0].shape}")
-    assert angles_increased[0].shape[0] == 1440
+    assert angles_increased[0].shape[0] == 1344
 
 
 """
