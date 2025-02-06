@@ -37,6 +37,7 @@ classifiers = [
 dependencies = [
     "torch",
     "numpy",
+    "roma",
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
