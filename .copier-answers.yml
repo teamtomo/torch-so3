@@ -6,6 +6,6 @@ author_name: Josh Dickerson
 github_username: jdickerson95
 mode: tooling
 module_name: torch_angular_search
-project_name: torch-angular-search
+project_name: torch-so3
 project_short_description: Generate uniform 3D euler angles (ZYZ)
 
