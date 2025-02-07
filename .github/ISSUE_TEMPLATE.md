@@ -1,4 +1,4 @@
-* torch-angular-search version:
+* torch-so3 version:
 * Python version:
 * Operating System:
 

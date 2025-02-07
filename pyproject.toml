@@ -15,7 +15,7 @@ sources = ["src"]
 
 # https://peps.python.org/pep-0621/
 [project]
-name = "torch-angular-search"
+name = "torch-so3"
 dynamic = ["version"]
 description = "Generate uniform 3D euler angles (ZYZ)"
 readme = "README.md"
@@ -56,17 +56,17 @@ dev = [
 ]
 
 [project.urls]
-homepage = "https://github.com/jdickerson95/torch-angular-search"
-repository = "https://github.com/jdickerson95/torch-angular-search"
+homepage = "https://github.com/jdickerson95/torch-so3"
+repository = "https://github.com/jdickerson95/torch-so3"
 
 # Entry points
 # https://peps.python.org/pep-0621/#entry-points
 # same as console_scripts entry point
 # [project.scripts]
-# torch-angular-search-cli = "torch_angular_search:main_cli"
+# torch-so3-cli = "torch_so3:main_cli"
 
 # [project.entry-points."some.group"]
-# tomatoes = "torch_angular_search:main_tomatoes"
+# tomatoes = "torch_so3:main_tomatoes"
 
 # https://docs.astral.sh/ruff
 [tool.ruff]
@@ -138,7 +138,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.run]
-source = ["torch_angular_search"]
+source = ["torch_so3"]
 
 # https://github.com/mgedmin/check-manifest#configuration
 # add files that you want check-manifest to explicitly ignore here

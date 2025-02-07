@@ -2,7 +2,7 @@
 
 import torch
 
-from torch_angular_search.hopf_angles import get_uniform_euler_angles
+from torch_so3.hopf_angles import get_uniform_euler_angles
 
 EPS = 1e-10
 

@@ -1,7 +1,7 @@
 """Tests for `torch_angular_search` package."""
 
-from torch_angular_search.hopf_angles import get_uniform_euler_angles
-from torch_angular_search.refine_search import increased_resolution_grid
+from torch_so3.hopf_angles import get_uniform_euler_angles
+from torch_so3.refine_search import increased_resolution_grid
 
 # TODO: Check actual values of returned tensors
 
