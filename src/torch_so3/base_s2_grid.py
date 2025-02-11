@@ -1,6 +1,12 @@
 """Functions for generating a base grid on the S^2 unit sphere."""
 
-import healpy as hp
+import platform
+import warnings
+
+if platform.system() == "Windows":
+    warnings.warn("healpy cannot be installed on Windows systems.", stacklevel=2)
+else:
+    import healpy as hp
 import numpy as np
 import torch
 
@@ -97,6 +103,9 @@ def healpix_base_grid(
         Tensor of shape (N, 2) containing theta and phi values in degrees, where N is
         the number of angles pairs generated.
     """
+    if platform.system() == "Windows":
+        raise ImportError("healpy cannot be installed on Windows systems.")
+
     out_of_plane_step_rad = np.deg2rad(out_of_plane_step)
 
     estimated_num_pixels = int(
