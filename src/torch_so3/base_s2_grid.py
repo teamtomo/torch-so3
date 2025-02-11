@@ -108,7 +108,7 @@ def healpix_base_grid(
     # Find the next largest npix value for a valid healpix grid
     exact_num_pixels = 0
     nside = np.ceil(np.sqrt(estimated_num_pixels / 12))
-    while nside < 30:
+    while nside < 36:
         exact_num_pixels = 12 * nside**2
         if exact_num_pixels >= estimated_num_pixels:
             break

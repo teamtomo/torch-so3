@@ -1,7 +1,10 @@
 """Generate multiple sets of uniform Euler angles using Hopf fibration."""
 
-import numpy as np
+from typing import Literal
+
 import torch
+
+from torch_so3.base_s2_grid import healpix_base_grid, uniform_base_grid
 
 
 def get_uniform_euler_angles(
@@ -13,6 +16,7 @@ def get_uniform_euler_angles(
     theta_max: float = 180.0,
     psi_min: float = 0.0,
     psi_max: float = 360.0,
+    base_grid_method: Literal["uniform", "healpix"] = "uniform",
 ) -> torch.Tensor:
     """Generate sets of uniform Euler angles (ZYZ) using Hopf fibration.
 
@@ -35,6 +39,9 @@ def get_uniform_euler_angles(
         Minimum value for psi in degrees. Default is 0.0.
     psi_max: float, optional
         Maximum value for psi in degrees. Default is 360.0.
+    base_grid_method: str, optional
+        String literal specifying the method to generate the base grid. Default is
+        "uniform". Options are "uniform" and "healpix".
 
     Returns
     -------
@@ -44,58 +51,30 @@ def get_uniform_euler_angles(
     """
     # TODO: Validation of inputs, wrapping between zero and 2*pi, etc.
 
-    # Convert input angles from degrees into radians
-    in_plane_step_rad = np.deg2rad(in_plane_step)
-    out_of_plane_step_rad = np.deg2rad(out_of_plane_step)
-    phi_min_rad = np.deg2rad(phi_min)
-    phi_max_rad = np.deg2rad(phi_max)
-    theta_min_rad = np.deg2rad(theta_min)
-    theta_max_rad = np.deg2rad(theta_max)
-    psi_min_rad = np.deg2rad(psi_min)
-    psi_max_rad = np.deg2rad(psi_max)
+    # Choose the method to generate the base grid from
+    if base_grid_method == "uniform":
+        base_grid_mth = uniform_base_grid
+    elif base_grid_method == "healpix":
+        base_grid_mth = healpix_base_grid
+    else:
+        raise ValueError(f"Invalid base grid method {base_grid_method}.")
 
-    # Initialize the list to store results
-    all_euler_angles = []
-
-    # The grid of theta and psi values to search over
-    # NOTE: Including the 180.0 degree entry in theta_all since projection of
-    # non-symmetric object (e.g. ribosome) is different at 0.0 and 180.0 degrees
-    theta_all = torch.arange(
-        theta_min_rad,
-        theta_max_rad + out_of_plane_step_rad,
-        step=out_of_plane_step_rad,
-        dtype=torch.float64,
-    )
-    psi_all = torch.arange(
-        psi_min_rad,
-        psi_max_rad,
-        step=in_plane_step_rad,
-        dtype=torch.float64,
+    base_grid = base_grid_mth(
+        out_of_plane_step=out_of_plane_step,
+        theta_min=theta_min,
+        theta_max=theta_max,
+        phi_min=phi_min,
+        phi_max=phi_max,
     )
 
-    # Phi step increment is modulated by the position on the sphere (sin(theta)), but
-    # don't allow it to exceed the maximum step size
-    phi_max_step = phi_max_rad - phi_min_rad
-    phi_step_all = torch.clamp(
-        torch.abs(out_of_plane_step_rad / torch.sin(theta_all)), max=phi_max_step
+    # Mesh-grid-like operation to include the in-plane rotation
+    phi_all = torch.arange(
+        phi_min, phi_max + in_plane_step, in_plane_step, dtype=torch.float64
     )
-    phi_step_all = phi_max_step / torch.round(phi_max_step / phi_step_all)
 
-    for j, phi_step in enumerate(phi_step_all):
-        phi_array = torch.arange(
-            phi_min_rad, phi_max_rad, phi_step, dtype=torch.float64
-        )
+    phi_mesh = phi_all.repeat_interleave(base_grid.size(0))
+    base_grid = base_grid.repeat(phi_all.size(0), 1)
 
-        grid_phi, grid_theta, grid_psi = torch.meshgrid(
-            phi_array,
-            theta_all[j],  # indexing only a single value from theta_all
-            psi_all,
-            indexing="ij",
-        )
-        euler_angles = torch.stack([grid_phi, grid_theta, grid_psi], dim=-1)
-        all_euler_angles.append(euler_angles.reshape(-1, 3))
+    all_angles = torch.cat([base_grid, phi_mesh.unsqueeze(1)], dim=1)
 
-    all_euler_angles = torch.cat(all_euler_angles, dim=0)
-    all_euler_angles = torch.rad2deg(all_euler_angles)
-
-    return all_euler_angles
+    return all_angles
