@@ -1,4 +1,4 @@
-"""Generate multiple sets of uniform Euler angles using Hopf fibration."""
+"""Generates a set of Euler angles that uniformly samples SO(3) using Hopf fibration."""
 
 from typing import Literal
 
@@ -68,13 +68,11 @@ def get_uniform_euler_angles(
     )
 
     # Mesh-grid-like operation to include the in-plane rotation
-    phi_all = torch.arange(
-        phi_min, phi_max + in_plane_step, in_plane_step, dtype=torch.float64
-    )
+    psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
 
-    phi_mesh = phi_all.repeat_interleave(base_grid.size(0))
-    base_grid = base_grid.repeat(phi_all.size(0), 1)
+    psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
+    base_grid = base_grid.repeat(psi_all.size(0), 1)
 
-    all_angles = torch.cat([base_grid, phi_mesh.unsqueeze(1)], dim=1)
+    all_angles = torch.cat([base_grid, psi_mesh[:, None]], dim=1)
 
     return all_angles

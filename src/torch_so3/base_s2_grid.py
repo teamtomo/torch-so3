@@ -75,8 +75,6 @@ def healpix_base_grid(
 ) -> torch.Tensor:
     """Generate a base grid on the S^2 sphere using HEALPix.
 
-    TODO: Implement theta/phi min/max functionality.
-
     Parameters
     ----------
     in_plane_step : float, optional
@@ -123,6 +121,16 @@ def healpix_base_grid(
     theta_values, phi_values = hp.pix2ang(int(nside), pixels)
     theta_values = torch.tensor(np.rad2deg(theta_values), dtype=torch.float64)
     phi_values = torch.tensor(np.rad2deg(phi_values), dtype=torch.float64)
+
+    # Remove values outside the desired range
+    valid_indices = (
+        (theta_values >= theta_min)
+        & (theta_values <= theta_max)
+        & (phi_values >= phi_min)
+        & (phi_values <= phi_max)
+    )
+    theta_values = theta_values[valid_indices]
+    phi_values = phi_values[valid_indices]
 
     angle_pairs = torch.stack([theta_values, phi_values], dim=1)
 
