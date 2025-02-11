@@ -1,23 +1,37 @@
 """Generate Euler angles ranges applying symmetry operations."""
 
-import torch
+from typing import NamedTuple
+
+
+class SymmetryRanges(NamedTuple):
+    """NamedTuple child class for 'get_symmetry_ranges' return type."""
+
+    phi_min: float
+    phi_max: float
+    theta_min: float
+    theta_max: float
+    psi_min: float
+    psi_max: float
 
 
 def get_symmetry_ranges(
     symmetry_group: str = "C",
     symmetry_order: int = 1,
-) -> torch.Tensor:
+) -> SymmetryRanges:
     """
     Generate Euler angle ranges based on symmetry group.
 
-    Args:
-        symmetry_group: Symmetry group of the particle (C, D, T, O, I).
-        symmetry_order: Order of the symmetry group.
+    Parameters
+    ----------
+    symmetry_group : str, optional
+        Symmetry group of the particle (C, D, T, O, I). Default is "C".
+    symmetry_order : int, optional
+        Order of the symmetry group. Default is 1.
 
     Returns
     -------
-        torch.Tensor: Tensor of shape (3, 2)
-            containing the ranges for phi, theta, and psi.
+    SymmetryRanges
+        NamedTuple containing the min/max for phi, theta, and psi.
     """
     # Convert to upper case
     symmetry_group = symmetry_group.upper()
@@ -41,6 +55,11 @@ def get_symmetry_ranges(
     else:
         raise ValueError("Symmetry group not recognized")
 
-    return torch.tensor(
-        [[-phi_max, phi_max], [0, theta_max], [-psi_max, psi_max]], dtype=torch.float64
+    return SymmetryRanges(
+        phi_min=-phi_max,
+        phi_max=phi_max,
+        theta_min=-theta_max,
+        theta_max=theta_max,
+        psi_min=-psi_max,
+        psi_max=psi_max,
     )
