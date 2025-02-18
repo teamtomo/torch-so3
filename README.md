@@ -8,6 +8,10 @@
 
 Generate uniform 3D euler angles (ZYZ)
 
+## Examples
+
+See the `/examples` directory for brief notebooks outlining the usage of the package.
+
 ## Installation
 
 Install via pip
