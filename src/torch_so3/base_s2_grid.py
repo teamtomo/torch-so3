@@ -138,8 +138,24 @@ def healpix_base_grid(
         & (phi_values >= phi_min)
         & (phi_values <= phi_max)
     )
+<<<<<<< Updated upstream
     theta_values = theta_values[valid_indices]
     phi_values = phi_values[valid_indices]
+=======
+
+    # NOTE: This is doing batched indexing to not exceed memory limits
+    if not torch.all(valid_indices):
+        theta_result = []
+        phi_result = []
+        valid_indices = torch.nonzero(valid_indices).squeeze()
+        for i in range(0, len(valid_indices), 256):
+            batch_indices = valid_indices[i : i + 256]
+            theta_result.append(theta_values[batch_indices])
+            phi_result.append(phi_values[batch_indices])
+
+        theta_values = torch.cat(theta_result)
+        phi_values = torch.cat(phi_result)
+>>>>>>> Stashed changes
 
     angle_pairs = torch.stack([theta_values, phi_values], dim=1)
 
