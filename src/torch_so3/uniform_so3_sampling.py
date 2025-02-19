@@ -73,6 +73,6 @@ def get_uniform_euler_angles(
     psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
     base_grid = base_grid.repeat(psi_all.size(0), 1)
 
-    all_angles = torch.cat([base_grid, psi_mesh[:, None]], dim=1)
+    all_angles = torch.cat([psi_mesh[:, None], base_grid], dim=1)
 
     return all_angles

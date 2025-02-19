@@ -15,6 +15,14 @@ def test_get_uniform_euler_angles():
     angles = get_uniform_euler_angles(base_grid_method="uniform")
     assert angles.shape == (1584480, 3)
 
+    # Ensure that the angles are within the desired (default) range
+    assert (angles[:, 0] >= 0).all()
+    assert (angles[:, 0] <= 360).all()
+    assert (angles[:, 1] >= 0).all()
+    assert (angles[:, 1] <= 180).all()
+    assert (angles[:, 2] >= 0).all()
+    assert (angles[:, 2] <= 360).all()
+
 
 @pytest.mark.skipif(
     platform.system() == "Windows", reason="healpy is not supported on Windows"
