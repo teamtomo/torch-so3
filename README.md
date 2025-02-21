@@ -41,7 +41,7 @@ pre-commit run
 A basic example of generating uniform Euler angles in 4.0 and 6.0 degree increments across the entire SO(3) group is shown below.
 
 ```python
-from torch_so3.uniform_so3_sampling import get_uniform_euler_angles
+from torch_so3 import get_uniform_euler_angles
 
 angles = get_uniform_euler_angles(
     in_plane_step=4.0,  # units of degrees

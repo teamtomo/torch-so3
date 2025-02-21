@@ -1,0 +1,10 @@
+[v0.1.2] - 2024-02-21
+
+- Resolved how the high-resolution grid around sample orientations is generated.
+- Renamed the `refine_search` submodule to `local_so3_sampling`.
+- Added the major functions `get_uniform_euler_angles` and `get_local_high_resolution_angles` to the top-level module for ease of access.
+
+[v0.1.1] - 2024-02-19
+
+- Fixed minor issues where order of Euler angles from `get_uniform_euler_angles` was not consistent.
+- Renamed the `hopf_angles` submodule to `uniform_so3_sampling`.
