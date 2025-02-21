@@ -2,9 +2,10 @@
 
 import platform
 
+import numpy as np
 import pytest
 
-from torch_so3.refine_search import increased_resolution_grid
+from torch_so3.local_so3_sampling import get_local_high_resolution_angles
 from torch_so3.uniform_so3_sampling import get_uniform_euler_angles
 
 # TODO: Check actual values of returned tensors
@@ -32,6 +33,14 @@ def test_get_uniform_euler_angles_healpix():
     assert angles.shape == (1658880, 3)
 
 
-def test_increase_resolution():
-    angles_increased = increased_resolution_grid()
-    assert angles_increased.shape == (1372, 3)
+def test_get_local_high_resolution_angles():
+    local_angles = get_local_high_resolution_angles()
+    assert local_angles.shape == (63333, 3)
+
+    # range tests for angles
+    assert np.allclose(local_angles[:, 0].min().item(), -1.5)
+    assert np.allclose(local_angles[:, 0].max().item(), 1.5)
+    assert (local_angles[:, 1] >= 0.0).all()
+    assert (local_angles[:, 1] <= 2.5).all()
+    assert (local_angles[:, 2] >= 0.0).all()
+    assert (local_angles[:, 2] < 360.0).all()
