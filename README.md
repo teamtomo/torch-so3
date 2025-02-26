@@ -6,7 +6,8 @@
 [![CI](https://github.com/teamtomo/torch-so3/actions/workflows/ci.yml/badge.svg)](https://github.com/teamtomo/torch-so3/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/teamtomo/torch-so3/branch/main/graph/badge.svg)](https://codecov.io/gh/teamtomo/torch-so3)
 
-Generate uniform 3D euler angles (ZYZ)
+Generate uniform sets of proper Euler angles (ZYZ format) over the SO(3) group using PyTorch.
+Note that Euler angles are returned in the order of $(\phi, \theta, \psi)$.
 
 ## Examples
 

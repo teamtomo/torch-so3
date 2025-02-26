@@ -67,12 +67,17 @@ def get_uniform_euler_angles(
         phi_max=phi_max,
     )
 
+    # Change order of base_grid from (theta, phi) to (phi, theta)
+    base_grid = base_grid[:, [1, 0]]
+
     # Mesh-grid-like operation to include the in-plane rotation
     psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
 
     psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
     base_grid = base_grid.repeat(psi_all.size(0), 1)
 
-    all_angles = torch.cat([psi_mesh[:, None], base_grid], dim=1)
+    # Ordering of angles is (phi, theta, psi) for ZYZ intrinsic rotations
+    # psi is the in-plane rotation
+    all_angles = torch.cat([base_grid, psi_mesh[:, None]], dim=1)
 
     return all_angles
