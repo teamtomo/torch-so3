@@ -38,9 +38,9 @@ def test_get_local_high_resolution_angles():
     assert local_angles.shape == (63333, 3)
 
     # range tests for angles
-    assert np.allclose(local_angles[:, 0].min().item(), -1.5)
-    assert np.allclose(local_angles[:, 0].max().item(), 1.5)
+    assert (local_angles[:, 0] >= 0.0).all()
+    assert (local_angles[:, 0] < 360.0).all()
     assert (local_angles[:, 1] >= 0.0).all()
     assert (local_angles[:, 1] <= 2.5).all()
-    assert (local_angles[:, 2] >= 0.0).all()
-    assert (local_angles[:, 2] < 360.0).all()
+    assert np.allclose(local_angles[:, 2].min().item(), -1.5)
+    assert np.allclose(local_angles[:, 2].max().item(), 1.5)
