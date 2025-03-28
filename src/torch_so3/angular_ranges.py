@@ -35,31 +35,31 @@ def get_symmetry_ranges(
     """
     # Convert to upper case
     symmetry_group = symmetry_group.upper()
-    phi_max = 180.0
+    phi_max = 360.0
     theta_max = 180.0
-    psi_max = 180.0
+    psi_max = 360.0
     if symmetry_group == "C":
-        phi_max = 180 / float(symmetry_order)
+        phi_max = 360 / float(symmetry_order)
     elif symmetry_group == "D":
-        phi_max = 180 / float(symmetry_order)
+        phi_max = 360 / float(symmetry_order)
         theta_max = 90.0
     elif symmetry_group == "T":
-        phi_max = 90.0
+        phi_max = 180.0
         theta_max = 54.7356
     elif symmetry_group == "O":
-        phi_max = 45.0
+        phi_max = 90.0
         theta_max = 54.7356
     elif symmetry_group == "I":
-        phi_max = 90.0
+        phi_max = 180.0
         theta_max = 31.7
     else:
         raise ValueError("Symmetry group not recognized")
 
     return SymmetryRanges(
-        phi_min=-phi_max,
+        phi_min=0.0,
         phi_max=phi_max,
-        theta_min=-theta_max,
+        theta_min=0.0,
         theta_max=theta_max,
-        psi_min=-psi_max,
+        psi_min=0.0,
         psi_max=psi_max,
     )
