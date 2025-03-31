@@ -68,7 +68,6 @@ def uniform_base_grid(
         if phi_min_rad >= phi_max_rad or phi_step <= 0.0:
             phi_values = np.array([phi_min_rad], dtype=np.float64)
         else:
-            print(phi_min_rad, phi_max_rad, phi_step)
             phi_values = np.arange(phi_min_rad, phi_max_rad, phi_step, dtype=np.float64)
         theta_values = np.full_like(phi_values, theta_all[i])
         angle_pairs.append(np.stack([phi_values, theta_values], axis=1))
