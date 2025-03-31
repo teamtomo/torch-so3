@@ -83,7 +83,10 @@ def get_uniform_euler_angles(
         )
 
     # Mesh-grid-like operation to include the in-plane rotation
-    psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
+    if psi_min >= psi_max:
+        psi_all = torch.tensor([psi_min], dtype=torch.float64)
+    else:
+        psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
 
     psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
     base_grid = base_grid.repeat(psi_all.size(0), 1)
