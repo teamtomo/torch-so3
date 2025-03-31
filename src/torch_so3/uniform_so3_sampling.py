@@ -4,7 +4,11 @@ from typing import Literal
 
 import torch
 
-from torch_so3.base_s2_grid import healpix_base_grid, uniform_base_grid
+from torch_so3.base_s2_grid import (
+    basic_base_grid,
+    healpix_base_grid,
+    uniform_base_grid,
+)
 
 
 def get_uniform_euler_angles(
@@ -16,7 +20,7 @@ def get_uniform_euler_angles(
     theta_max: float = 180.0,
     psi_min: float = 0.0,
     psi_max: float = 360.0,
-    base_grid_method: Literal["uniform", "healpix"] = "uniform",
+    base_grid_method: Literal["uniform", "healpix", "basic"] = "uniform",
 ) -> torch.Tensor:
     """Generate sets of uniform Euler angles (ZYZ) using Hopf fibration.
 
@@ -41,7 +45,7 @@ def get_uniform_euler_angles(
         Maximum value for psi in degrees. Default is 360.0.
     base_grid_method: str, optional
         String literal specifying the method to generate the base grid. Default is
-        "uniform". Options are "uniform" and "healpix".
+        "uniform". Options are "uniform", "healpix", and "basic".
 
     Returns
     -------
@@ -51,24 +55,32 @@ def get_uniform_euler_angles(
     """
     # TODO: Validation of inputs, wrapping between zero and 2*pi, etc.
 
-    # Choose the method to generate the base grid from
-    if base_grid_method == "uniform":
-        base_grid_mth = uniform_base_grid
-    elif base_grid_method == "healpix":
-        base_grid_mth = healpix_base_grid
+    if base_grid_method == "basic":
+        # Handle basic_base_grid separately since it has a different signature
+        base_grid = basic_base_grid(
+            out_of_plane_step=out_of_plane_step,
+            in_plane_step=in_plane_step,
+            theta_min=theta_min,
+            theta_max=theta_max,
+            phi_min=phi_min,
+            phi_max=phi_max,
+        )
     else:
-        raise ValueError(f"Invalid base grid method {base_grid_method}.")
+        # Handle uniform and healpix grids
+        if base_grid_method == "uniform":
+            base_grid_mth = uniform_base_grid
+        elif base_grid_method == "healpix":
+            base_grid_mth = healpix_base_grid
+        else:
+            raise ValueError(f"Invalid base grid method {base_grid_method}.")
 
-    base_grid = base_grid_mth(
-        out_of_plane_step=out_of_plane_step,
-        theta_min=theta_min,
-        theta_max=theta_max,
-        phi_min=phi_min,
-        phi_max=phi_max,
-    )
-
-    # Change order of base_grid from (theta, phi) to (phi, theta)
-    base_grid = base_grid[:, [1, 0]]
+        base_grid = base_grid_mth(
+            out_of_plane_step=out_of_plane_step,
+            theta_min=theta_min,
+            theta_max=theta_max,
+            phi_min=phi_min,
+            phi_max=phi_max,
+        )
 
     # Mesh-grid-like operation to include the in-plane rotation
     psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)

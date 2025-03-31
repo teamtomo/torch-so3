@@ -1,5 +1,7 @@
 """Generate finer angular search around multiple selected Euler angles."""
 
+from typing import Literal
+
 import torch
 
 from torch_so3.uniform_so3_sampling import get_uniform_euler_angles
@@ -12,6 +14,7 @@ def get_local_high_resolution_angles(
     coarse_out_of_plane_step: float = 2.5,
     fine_in_plane_step: float = 0.1,
     fine_out_of_plane_step: float = 0.1,
+    base_grid_method: Literal["uniform", "healpix", "basic"] = "uniform",
 ) -> torch.Tensor:
     """Local orientation refinement from a coarse to fine grid.
 
@@ -29,6 +32,8 @@ def get_local_high_resolution_angles(
         Finer step size for in-plane angles (psi) in degrees.
     fine_out_of_plane_step : float
         Finer step size for out-of-plane angle (theta, phi) in degrees.
+    base_grid_method : Literal["uniform", "healpix", "basic"]
+        Method to generate the base grid.
 
     Returns
     -------
@@ -40,12 +45,13 @@ def get_local_high_resolution_angles(
     euler_angles = get_uniform_euler_angles(
         in_plane_step=fine_in_plane_step,
         out_of_plane_step=fine_out_of_plane_step,
+        phi_min=-coarse_in_plane_step,  # Completely sample for uniform base grid?
+        phi_max=coarse_in_plane_step,
+        theta_min=-coarse_out_of_plane_step,
+        theta_max=coarse_out_of_plane_step,
         psi_min=-coarse_in_plane_step,
         psi_max=coarse_in_plane_step + EPS,
-        theta_min=0.0,
-        theta_max=coarse_out_of_plane_step,
-        phi_min=0.0,  # Completely sample around the s2 sphere
-        phi_max=360.0,
+        base_grid_method=base_grid_method,
     )
 
     return euler_angles

@@ -64,7 +64,7 @@ def uniform_base_grid(
     for i, phi_step in enumerate(phi_step_all):
         phi_values = np.arange(phi_min_rad, phi_max_rad, phi_step, dtype=np.float64)
         theta_values = np.full_like(phi_values, theta_all[i])
-        angle_pairs.append(np.stack([theta_values, phi_values], axis=1))
+        angle_pairs.append(np.stack([phi_values, theta_values], axis=1))
 
     # Convert back to degrees
     angle_pairs = np.rad2deg(np.concatenate(angle_pairs))
@@ -152,6 +152,59 @@ def healpix_base_grid(
         theta_values = torch.cat(theta_result)
         phi_values = torch.cat(phi_result)
 
-    angle_pairs = torch.stack([theta_values, phi_values], dim=1)
+    angle_pairs = torch.stack([phi_values, theta_values], dim=1)
 
     return angle_pairs
+
+
+def basic_base_grid(
+    out_of_plane_step: float = 2.5,
+    in_plane_step: float = 1.5,
+    theta_min: float = 0.0,
+    theta_max: float = 180.0,
+    phi_min: float = 0.0,
+    phi_max: float = 360.0,
+) -> torch.Tensor:
+    """Generate a base grid on the S^2 sphere using a basic grid.
+
+    Parameters
+    ----------
+    out_of_plane_step : float, optional
+        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
+        degrees.
+    in_plane_step : float, optional
+        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
+    theta_min : float, optional
+        Minimum value for theta in degrees. Default is 0.0.
+    theta_max : float, optional
+        Maximum value for theta in degrees. Default is 180.0.
+    phi_min : float, optional
+        Minimum value for phi in degrees. Default is 0.0.
+    phi_max : float, optional
+        Maximum value for phi in degrees. Default is 360.0.
+
+    Returns
+    -------
+    torch.Tensor
+        Tensor of shape (N, 2) containing theta and phi values in degrees, where N is
+        the number of angles pairs generated.
+    """
+    # Generate the base grid
+    phi_values = torch.arange(
+        phi_min,
+        phi_max,
+        in_plane_step,
+        dtype=torch.float64,
+    )
+
+    theta_values = torch.arange(
+        theta_min,
+        theta_max,
+        out_of_plane_step,
+        dtype=torch.float64,
+    )
+
+    grid = torch.meshgrid(phi_values, theta_values, indexing="ij")
+    euler_angles = torch.stack(grid, dim=-1).reshape(-1, 2)
+
+    return euler_angles
