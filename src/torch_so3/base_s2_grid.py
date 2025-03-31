@@ -57,14 +57,18 @@ def uniform_base_grid(
     phi_max_step_rad = phi_max_rad - phi_min_rad
     phi_step_all = np.abs(out_of_plane_step_rad / (np.sin(theta_all) + 1e-6))
     phi_step_all = np.clip(phi_step_all, a_min=None, a_max=phi_max_step_rad)
-    phi_step_all = phi_max_step_rad / np.round(phi_max_step_rad / phi_step_all)
+    if phi_max_step_rad > 0.0:
+        phi_step_all = phi_max_step_rad / np.round(phi_max_step_rad / phi_step_all)
+    else:
+        phi_step_all *= 0.0
 
     # Now generate the angle pairs
     angle_pairs = []
     for i, phi_step in enumerate(phi_step_all):
-        if phi_min_rad > phi_max_rad or phi_step <= 0.0:
+        if phi_min_rad >= phi_max_rad or phi_step <= 0.0:
             phi_values = np.array([phi_min_rad], dtype=np.float64)
         else:
+            print(phi_min_rad, phi_max_rad, phi_step)
             phi_values = np.arange(phi_min_rad, phi_max_rad, phi_step, dtype=np.float64)
         theta_values = np.full_like(phi_values, theta_all[i])
         angle_pairs.append(np.stack([phi_values, theta_values], axis=1))
