@@ -14,7 +14,7 @@ def get_local_high_resolution_angles(
     coarse_out_of_plane_step: float = 2.5,
     fine_in_plane_step: float = 0.1,
     fine_out_of_plane_step: float = 0.1,
-    base_grid_method: Literal["uniform", "healpix", "basic"] = "uniform",
+    base_grid_method: Literal["uniform", "healpix", "cartesian"] = "uniform",
 ) -> torch.Tensor:
     """Local orientation refinement from a coarse to fine grid.
 
@@ -32,7 +32,7 @@ def get_local_high_resolution_angles(
         Finer step size for in-plane angles (psi) in degrees.
     fine_out_of_plane_step : float
         Finer step size for out-of-plane angle (theta, phi) in degrees.
-    base_grid_method : Literal["uniform", "healpix", "basic"]
+    base_grid_method : Literal["uniform", "healpix", "cartesian"]
         Method to generate the base grid.
 
     Returns

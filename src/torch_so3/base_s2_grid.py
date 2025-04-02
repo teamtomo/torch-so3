@@ -163,7 +163,7 @@ def healpix_base_grid(
     return angle_pairs
 
 
-def basic_base_grid(
+def cartesian_base_grid(
     out_of_plane_step: float = 2.5,
     in_plane_step: float = 1.5,
     theta_min: float = 0.0,
@@ -171,7 +171,7 @@ def basic_base_grid(
     phi_min: float = 0.0,
     phi_max: float = 360.0,
 ) -> torch.Tensor:
-    """Generate a base grid on the S^2 sphere using a basic grid.
+    """Generate a base grid on the S^2 sphere using a cartesian grid.
 
     Parameters
     ----------

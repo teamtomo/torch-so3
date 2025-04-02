@@ -5,7 +5,7 @@ from typing import Literal
 import torch
 
 from torch_so3.base_s2_grid import (
-    basic_base_grid,
+    cartesian_base_grid,
     healpix_base_grid,
     uniform_base_grid,
 )
@@ -20,7 +20,7 @@ def get_uniform_euler_angles(
     theta_max: float = 180.0,
     psi_min: float = 0.0,
     psi_max: float = 360.0,
-    base_grid_method: Literal["uniform", "healpix", "basic"] = "uniform",
+    base_grid_method: Literal["uniform", "healpix", "cartesian"] = "uniform",
 ) -> torch.Tensor:
     """Generate sets of uniform Euler angles (ZYZ) using Hopf fibration.
 
@@ -45,7 +45,7 @@ def get_uniform_euler_angles(
         Maximum value for psi in degrees. Default is 360.0.
     base_grid_method: str, optional
         String literal specifying the method to generate the base grid. Default is
-        "uniform". Options are "uniform", "healpix", and "basic".
+        "uniform". Options are "uniform", "healpix", and "cartesian".
 
     Returns
     -------
@@ -55,9 +55,9 @@ def get_uniform_euler_angles(
     """
     # TODO: Validation of inputs, wrapping between zero and 2*pi, etc.
 
-    if base_grid_method == "basic":
+    if base_grid_method == "cartesian":
         # Handle basic_base_grid separately since it has a different signature
-        base_grid = basic_base_grid(
+        base_grid = cartesian_base_grid(
             out_of_plane_step=out_of_plane_step,
             in_plane_step=in_plane_step,
             theta_min=theta_min,
