@@ -12,7 +12,7 @@ import torch
 
 
 def uniform_base_grid(
-    out_of_plane_step: float = 2.5,
+    theta_step: float = 2.5,
     theta_min: float = 0.0,
     theta_max: float = 180.0,
     phi_min: float = 0.0,
@@ -22,9 +22,7 @@ def uniform_base_grid(
 
     Parameters
     ----------
-    in_plane_step : float, optional
-        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
-    out_of_plane_step : float, optional
+    theta_step : float, optional
         Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
         degrees.
     theta_min : float, optional
@@ -42,20 +40,20 @@ def uniform_base_grid(
         Tensor of shape (N, 2) containing theta and phi values in degrees, where N is
         the number of angles pairs generated.
     """
-    out_of_plane_step_rad = np.deg2rad(out_of_plane_step)
+    theta_step_rad = np.deg2rad(theta_step)
     phi_min_rad = np.deg2rad(phi_min)
     phi_max_rad = np.deg2rad(phi_max)
 
     # generate uniform set of theta values
     theta_all = np.arange(
-        theta_min, theta_max + out_of_plane_step, out_of_plane_step, dtype=np.float64
+        theta_min, theta_max + theta_step, theta_step, dtype=np.float64
     )
     theta_all = np.deg2rad(theta_all)
 
     # Phi step increment is modulated by the position on the sphere (sin(theta)), but
     # don't allow it to exceed the maximum step size
     phi_max_step_rad = phi_max_rad - phi_min_rad
-    phi_step_all = np.abs(out_of_plane_step_rad / (np.sin(theta_all) + 1e-6))
+    phi_step_all = np.abs(theta_step_rad / (np.sin(theta_all) + 1e-6))
     phi_step_all = np.clip(phi_step_all, a_min=None, a_max=phi_max_step_rad)
     if phi_max_step_rad > 0.0:
         phi_step_all = phi_max_step_rad / np.round(phi_max_step_rad / phi_step_all)
@@ -79,7 +77,7 @@ def uniform_base_grid(
 
 
 def healpix_base_grid(
-    out_of_plane_step: float = 2.5,
+    theta_step: float = 2.5,
     theta_min: float = 0.0,
     theta_max: float = 180.0,
     phi_min: float = 0.0,
@@ -89,9 +87,7 @@ def healpix_base_grid(
 
     Parameters
     ----------
-    in_plane_step : float, optional
-        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
-    out_of_plane_step : float, optional
+    theta_step : float, optional
         Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
         degrees.
     theta_min : float, optional
@@ -112,11 +108,9 @@ def healpix_base_grid(
     if platform.system() == "Windows":
         raise ImportError("healpy cannot be installed on Windows systems.")
 
-    out_of_plane_step_rad = np.deg2rad(out_of_plane_step)
+    theta_step_rad = np.deg2rad(theta_step)
 
-    estimated_num_pixels = int(
-        4 * np.pi / (out_of_plane_step_rad * out_of_plane_step_rad)
-    )
+    estimated_num_pixels = int(4 * np.pi / (theta_step_rad * theta_step_rad))
 
     # Find the next largest npix value for a valid healpix grid
     exact_num_pixels = 0
@@ -164,8 +158,8 @@ def healpix_base_grid(
 
 
 def cartesian_base_grid(
-    out_of_plane_step: float = 2.5,
-    in_plane_step: float = 1.5,
+    theta_step: float = 2.5,
+    phi_step: float = 1.5,
     theta_min: float = 0.0,
     theta_max: float = 180.0,
     phi_min: float = 0.0,
@@ -175,10 +169,10 @@ def cartesian_base_grid(
 
     Parameters
     ----------
-    out_of_plane_step : float, optional
+    theta_step : float, optional
         Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
         degrees.
-    in_plane_step : float, optional
+    phi_step : float, optional
         Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
     theta_min : float, optional
         Minimum value for theta in degrees. Default is 0.0.
@@ -199,14 +193,14 @@ def cartesian_base_grid(
     phi_values = torch.arange(
         phi_min,
         phi_max,
-        in_plane_step,
+        phi_step,
         dtype=torch.float64,
     )
 
     theta_values = torch.arange(
         theta_min,
         theta_max,
-        out_of_plane_step,
+        theta_step,
         dtype=torch.float64,
     )
 

@@ -1,6 +1,7 @@
 """Generates a set of Euler angles that uniformly samples SO(3) using Hopf fibration."""
 
-from typing import Literal
+import warnings
+from typing import Literal, Optional
 
 import torch
 
@@ -12,8 +13,9 @@ from torch_so3.base_s2_grid import (
 
 
 def get_uniform_euler_angles(
-    in_plane_step: float = 1.5,
-    out_of_plane_step: float = 2.5,
+    psi_step: float = 1.5,
+    theta_step: float = 2.5,
+    phi_step: Optional[float] = None,
     phi_min: float = 0.0,
     phi_max: float = 360.0,
     theta_min: float = 0.0,
@@ -26,11 +28,14 @@ def get_uniform_euler_angles(
 
     Parameters
     ----------
-    in_plane_step: float, optional
-        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
-    out_of_plane_step: float, optional
+    psi_step: float, optional
+        Angular step for in-plane rotation (psi) in degrees. Default is 1.5 degrees.
+    theta_step: float, optional
         Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
         degrees.
+    phi_step: float, optional
+        Angular step for phi rotation in degrees. Only used when base_grid_method is
+        "cartesian". Default is 2.5 degrees.
     phi_min: float, optional
         Minimum value for phi in degrees. Default is 0.0.
     phi_max: float, optional
@@ -56,10 +61,11 @@ def get_uniform_euler_angles(
     # TODO: Validation of inputs, wrapping between zero and 2*pi, etc.
 
     if base_grid_method == "cartesian":
-        # Handle basic_base_grid separately since it has a different signature
+        # Handle cartesian_base_grid separately since it has a different signature
+        actual_phi_step = 2.5 if phi_step is None else phi_step
         base_grid = cartesian_base_grid(
-            out_of_plane_step=out_of_plane_step,
-            in_plane_step=in_plane_step,
+            theta_step=theta_step,
+            phi_step=actual_phi_step,
             theta_min=theta_min,
             theta_max=theta_max,
             phi_min=phi_min,
@@ -74,8 +80,15 @@ def get_uniform_euler_angles(
         else:
             raise ValueError(f"Invalid base grid method {base_grid_method}.")
 
+        # Check if phi_step was specified for non-cartesian methods
+        if phi_step is not None:
+            warnings.warn(
+                f"phi_step is being ignored for {base_grid_method} method.",
+                stacklevel=2,
+            )
+
         base_grid = base_grid_mth(
-            out_of_plane_step=out_of_plane_step,
+            theta_step=theta_step,
             theta_min=theta_min,
             theta_max=theta_max,
             phi_min=phi_min,
@@ -86,7 +99,7 @@ def get_uniform_euler_angles(
     if psi_min >= psi_max:
         psi_all = torch.tensor([psi_min], dtype=torch.float64)
     else:
-        psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
+        psi_all = torch.arange(psi_min, psi_max, psi_step, dtype=torch.float64)
 
     psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
     base_grid = base_grid.repeat(psi_all.size(0), 1)

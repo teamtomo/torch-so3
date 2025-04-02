@@ -10,10 +10,12 @@ EPS = 1e-6
 
 
 def get_local_high_resolution_angles(
-    coarse_in_plane_step: float = 1.5,
-    coarse_out_of_plane_step: float = 2.5,
-    fine_in_plane_step: float = 0.1,
-    fine_out_of_plane_step: float = 0.1,
+    coarse_psi_step: float = 1.5,
+    coarse_theta_step: float = 2.5,
+    coarse_phi_step: float = 2.5,
+    fine_psi_step: float = 0.1,
+    fine_theta_step: float = 0.1,
+    fine_phi_step: float = 0.1,
     base_grid_method: Literal["uniform", "healpix", "cartesian"] = "uniform",
 ) -> torch.Tensor:
     """Local orientation refinement from a coarse to fine grid.
@@ -24,14 +26,18 @@ def get_local_high_resolution_angles(
 
     Parameters
     ----------
-    coarse_in_plane_step : float
-        Coarse step size for in-plane angle (psi) in degrees.
-    coarse_out_of_plane_step : float
-        Coarse step size for out-of-plane angle (theta, phi) in degrees.
-    fine_in_plane_step : float
-        Finer step size for in-plane angles (psi) in degrees.
-    fine_out_of_plane_step : float
-        Finer step size for out-of-plane angle (theta, phi) in degrees.
+    coarse_psi_step : float
+        Coarse step size for psi in degrees.
+    coarse_theta_step : float
+        Coarse step size for theta in degrees.
+    coarse_phi_step : float
+        Coarse step size for phi in degrees.
+    fine_psi_step : float
+        Finer step size for psi in degrees.
+    fine_theta_step : float
+        Finer step size for theta in degrees.
+    fine_phi_step : float
+        Finer step size for phi in degrees.
     base_grid_method : Literal["uniform", "healpix", "cartesian"]
         Method to generate the base grid.
 
@@ -42,16 +48,30 @@ def get_local_high_resolution_angles(
         number of angles generated. Angles exist around pole (0, 0, 0) and define grid
         to search over.
     """
-    euler_angles = get_uniform_euler_angles(
-        in_plane_step=fine_in_plane_step,
-        out_of_plane_step=fine_out_of_plane_step,
-        phi_min=-coarse_in_plane_step,  # Completely sample for uniform base grid?
-        phi_max=coarse_in_plane_step,
-        theta_min=-coarse_out_of_plane_step,
-        theta_max=coarse_out_of_plane_step,
-        psi_min=-coarse_in_plane_step,
-        psi_max=coarse_in_plane_step + EPS,
-        base_grid_method=base_grid_method,
-    )
+    if base_grid_method == "cartesian":
+        euler_angles = get_uniform_euler_angles(
+            psi_step=fine_psi_step,
+            theta_step=fine_theta_step,
+            phi_step=fine_phi_step,
+            phi_min=-coarse_phi_step,  # Completely sample for uniform base grid?
+            phi_max=coarse_phi_step,
+            theta_min=-coarse_theta_step,
+            theta_max=coarse_theta_step,
+            psi_min=-coarse_psi_step,
+            psi_max=coarse_psi_step + EPS,
+            base_grid_method=base_grid_method,
+        )
+    else:
+        euler_angles = get_uniform_euler_angles(
+            psi_step=fine_psi_step,
+            theta_step=fine_theta_step,
+            phi_min=-coarse_psi_step,  # Completely sample for uniform base grid?
+            phi_max=coarse_psi_step,
+            theta_min=-coarse_theta_step,
+            theta_max=coarse_theta_step,
+            psi_min=-coarse_psi_step,
+            psi_max=coarse_psi_step + EPS,
+            base_grid_method=base_grid_method,
+        )
 
     return euler_angles
