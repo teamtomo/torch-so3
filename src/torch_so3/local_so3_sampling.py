@@ -10,12 +10,12 @@ EPS = 1e-6
 
 
 def get_local_high_resolution_angles(
-    coarse_psi_step: float = 1.5,
-    coarse_theta_step: float = 2.5,
     coarse_phi_step: float = 2.5,
-    fine_psi_step: float = 0.1,
-    fine_theta_step: float = 0.1,
+    coarse_theta_step: float = 2.5,
+    coarse_psi_step: float = 1.5,
     fine_phi_step: float = 0.1,
+    fine_theta_step: float = 0.1,
+    fine_psi_step: float = 0.1,
     base_grid_method: Literal["uniform", "healpix", "cartesian"] = "uniform",
 ) -> torch.Tensor:
     """Local orientation refinement from a coarse to fine grid.
@@ -32,12 +32,12 @@ def get_local_high_resolution_angles(
         Coarse step size for theta in degrees.
     coarse_psi_step : float
         Coarse step size for psi in degrees.
-    fine_psi_step : float
-        Finer step size for psi in degrees.
-    fine_theta_step : float
-        Finer step size for theta in degrees.
     fine_phi_step : float
         Finer step size for phi in degrees.
+    fine_theta_step : float
+        Finer step size for theta in degrees.
+    fine_psi_step : float
+        Finer step size for psi in degrees.
     base_grid_method : Literal["uniform", "healpix", "cartesian"]
         Method to generate the base grid.
 
