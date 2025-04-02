@@ -26,12 +26,12 @@ def get_local_high_resolution_angles(
 
     Parameters
     ----------
-    coarse_psi_step : float
-        Coarse step size for psi in degrees.
-    coarse_theta_step : float
-        Coarse step size for theta in degrees.
     coarse_phi_step : float
         Coarse step size for phi in degrees.
+    coarse_theta_step : float
+        Coarse step size for theta in degrees.
+    coarse_psi_step : float
+        Coarse step size for psi in degrees.
     fine_psi_step : float
         Finer step size for psi in degrees.
     fine_theta_step : float
@@ -50,9 +50,9 @@ def get_local_high_resolution_angles(
     """
     if base_grid_method == "cartesian":
         euler_angles = get_uniform_euler_angles(
-            psi_step=fine_psi_step,
-            theta_step=fine_theta_step,
             phi_step=fine_phi_step,
+            theta_step=fine_theta_step,
+            psi_step=fine_psi_step,
             phi_min=-coarse_phi_step,  # Completely sample for uniform base grid?
             phi_max=coarse_phi_step,
             theta_min=-coarse_theta_step,

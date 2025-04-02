@@ -29,9 +29,9 @@ def get_uniform_euler_angles(
     Parameters
     ----------
     psi_step: float, optional
-        Angular step for in-plane rotation (psi) in degrees. Default is 1.5 degrees.
+        Angular step for psi in degrees. Default is 1.5 degrees.
     theta_step: float, optional
-        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
+        Angular step for theta in degrees. Default is 2.5
         degrees.
     phi_step: float, optional
         Angular step for phi rotation in degrees. Only used when base_grid_method is

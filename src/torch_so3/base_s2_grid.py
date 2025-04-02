@@ -23,8 +23,7 @@ def uniform_base_grid(
     Parameters
     ----------
     theta_step : float, optional
-        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
-        degrees.
+        Angular step for theta in degrees. Default is 2.5
     theta_min : float, optional
         Minimum value for theta in degrees. Default is 0.0.
     theta_max : float, optional
@@ -88,8 +87,7 @@ def healpix_base_grid(
     Parameters
     ----------
     theta_step : float, optional
-        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
-        degrees.
+        Angular step for theta in degrees. Default is 2.5
     theta_min : float, optional
         Minimum value for theta in degrees. Default is 0.0.
     theta_max : float, optional
@@ -170,10 +168,9 @@ def cartesian_base_grid(
     Parameters
     ----------
     theta_step : float, optional
-        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
-        degrees.
+        Angular step for theta in degrees. Default is 2.5
     phi_step : float, optional
-        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
+        Angular step for phi in degrees. Default is 1.5 degrees.
     theta_min : float, optional
         Minimum value for theta in degrees. Default is 0.0.
     theta_max : float, optional
