@@ -20,6 +20,9 @@ def uniform_base_grid(
 ) -> torch.Tensor:
     """Generate a uniform base grid on the S^2 sphere.
 
+    phi step is calculated by the position on the sphere (sin(theta))
+
+
     Parameters
     ----------
     theta_step : float, optional
@@ -83,6 +86,8 @@ def healpix_base_grid(
     phi_max: float = 360.0,
 ) -> torch.Tensor:
     """Generate a base grid on the S^2 sphere using HEALPix.
+
+    phi step is calculated by the position on the sphere
 
     Parameters
     ----------
@@ -164,6 +169,8 @@ def cartesian_base_grid(
     phi_max: float = 360.0,
 ) -> torch.Tensor:
     """Generate a base grid on the S^2 sphere using a cartesian grid.
+
+    phi step is now set explicitly. This will oversample the poles.
 
     Parameters
     ----------
