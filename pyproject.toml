@@ -37,7 +37,7 @@ classifiers = [
 dependencies = [
     "torch", 
     "numpy", 
-    "healpy==1.18.0; platform_system != 'Windows'"
+    "healpy; platform_system != 'Windows'"
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
