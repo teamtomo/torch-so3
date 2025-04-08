@@ -3,12 +3,12 @@
 import platform
 import warnings
 
+import numpy as np
+import torch
 if platform.system() == "Windows":
     warnings.warn("healpy cannot be installed on Windows systems.", stacklevel=2)
 else:
     import healpy as hp
-import numpy as np
-import torch
 
 
 def uniform_base_grid(
