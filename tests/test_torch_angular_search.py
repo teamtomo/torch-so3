@@ -5,7 +5,10 @@ import platform
 import numpy as np
 import pytest
 
-from torch_so3.local_so3_sampling import get_local_high_resolution_angles
+from torch_so3.local_so3_sampling import (
+    get_local_high_resolution_angles,
+    get_roll_angles,
+)
 from torch_so3.uniform_so3_sampling import get_uniform_euler_angles
 
 # TODO: Check actual values of returned tensors
@@ -44,3 +47,12 @@ def test_get_local_high_resolution_angles():
     assert (local_angles[:, 1] <= 2.51).all()
     assert np.allclose(local_angles[:, 2].min().item(), -1.50)
     assert np.allclose(local_angles[:, 2].max().item(), 1.50)
+
+
+def test_get_roll_angles():
+    roll_angles = get_roll_angles()
+    assert roll_angles.shape == (151290, 3)
+
+    # range tests for angles
+    assert (roll_angles[:, 1] >= -10.01).all()
+    assert (roll_angles[:, 1] <= 10.01).all()

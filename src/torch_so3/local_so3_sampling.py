@@ -153,7 +153,7 @@ def get_roll_angles(
     theta_flat = theta_grid.reshape(-1)
     psi_flat = psi_grid.reshape(-1)
 
-    # For each combination ( I do extrinsic in my head so go backwards):
+    # For each combination (I do extrinsic in my head so go backwards):
     # 1. First Euler angle (phi): Rotate to align back with the psi_angle
     # 2. Second Euler angle (theta): Apply theta rotation around roll axis
     # 3. Third Euler angle (psi): Rotate to align with roll axis
