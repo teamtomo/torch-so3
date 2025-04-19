@@ -1,32 +1,41 @@
 """Generates a set of Euler angles that uniformly samples SO(3) using Hopf fibration."""
 
-from typing import Literal
+import warnings
+from typing import Literal, Optional
 
 import torch
 
-from torch_so3.base_s2_grid import healpix_base_grid, uniform_base_grid
+from torch_so3.base_s2_grid import (
+    cartesian_base_grid,
+    healpix_base_grid,
+    uniform_base_grid,
+)
 
 
 def get_uniform_euler_angles(
-    in_plane_step: float = 1.5,
-    out_of_plane_step: float = 2.5,
+    psi_step: float = 1.5,
+    theta_step: float = 2.5,
+    phi_step: Optional[float] = None,
     phi_min: float = 0.0,
     phi_max: float = 360.0,
     theta_min: float = 0.0,
     theta_max: float = 180.0,
     psi_min: float = 0.0,
     psi_max: float = 360.0,
-    base_grid_method: Literal["uniform", "healpix"] = "uniform",
+    base_grid_method: Literal["uniform", "healpix", "cartesian"] = "uniform",
 ) -> torch.Tensor:
     """Generate sets of uniform Euler angles (ZYZ) using Hopf fibration.
 
     Parameters
     ----------
-    in_plane_step: float, optional
-        Angular step for in-plane rotation (phi) in degrees. Default is 1.5 degrees.
-    out_of_plane_step: float, optional
-        Angular step for out-of-plane rotation (theta) in degrees. Default is 2.5
+    psi_step: float, optional
+        Angular step for psi in degrees. Default is 1.5 degrees.
+    theta_step: float, optional
+        Angular step for theta in degrees. Default is 2.5
         degrees.
+    phi_step: float, optional
+        Angular step for phi rotation in degrees. Only used when base_grid_method is
+        "cartesian". Default is 2.5 degrees.
     phi_min: float, optional
         Minimum value for phi in degrees. Default is 0.0.
     phi_max: float, optional
@@ -41,7 +50,7 @@ def get_uniform_euler_angles(
         Maximum value for psi in degrees. Default is 360.0.
     base_grid_method: str, optional
         String literal specifying the method to generate the base grid. Default is
-        "uniform". Options are "uniform" and "healpix".
+        "uniform". Options are "uniform", "healpix", and "cartesian".
 
     Returns
     -------
@@ -51,27 +60,46 @@ def get_uniform_euler_angles(
     """
     # TODO: Validation of inputs, wrapping between zero and 2*pi, etc.
 
-    # Choose the method to generate the base grid from
-    if base_grid_method == "uniform":
-        base_grid_mth = uniform_base_grid
-    elif base_grid_method == "healpix":
-        base_grid_mth = healpix_base_grid
+    if base_grid_method == "cartesian":
+        # Handle cartesian_base_grid separately since it has a different signature
+        actual_phi_step = 2.5 if phi_step is None else phi_step
+        base_grid = cartesian_base_grid(
+            theta_step=theta_step,
+            phi_step=actual_phi_step,
+            theta_min=theta_min,
+            theta_max=theta_max,
+            phi_min=phi_min,
+            phi_max=phi_max,
+        )
     else:
-        raise ValueError(f"Invalid base grid method {base_grid_method}.")
+        # Handle uniform and healpix grids
+        if base_grid_method == "uniform":
+            base_grid_mth = uniform_base_grid
+        elif base_grid_method == "healpix":
+            base_grid_mth = healpix_base_grid
+        else:
+            raise ValueError(f"Invalid base grid method {base_grid_method}.")
 
-    base_grid = base_grid_mth(
-        out_of_plane_step=out_of_plane_step,
-        theta_min=theta_min,
-        theta_max=theta_max,
-        phi_min=phi_min,
-        phi_max=phi_max,
-    )
+        # Check if phi_step was specified for non-cartesian methods
+        if phi_step is not None:
+            warnings.warn(
+                f"phi_step is being ignored for {base_grid_method} method.",
+                stacklevel=2,
+            )
 
-    # Change order of base_grid from (theta, phi) to (phi, theta)
-    base_grid = base_grid[:, [1, 0]]
+        base_grid = base_grid_mth(
+            theta_step=theta_step,
+            theta_min=theta_min,
+            theta_max=theta_max,
+            phi_min=phi_min,
+            phi_max=phi_max,
+        )
 
     # Mesh-grid-like operation to include the in-plane rotation
-    psi_all = torch.arange(psi_min, psi_max, in_plane_step, dtype=torch.float64)
+    if psi_min >= psi_max:
+        psi_all = torch.tensor([psi_min], dtype=torch.float64)
+    else:
+        psi_all = torch.arange(psi_min, psi_max, psi_step, dtype=torch.float64)
 
     psi_mesh = psi_all.repeat_interleave(base_grid.size(0))
     base_grid = base_grid.repeat(psi_all.size(0), 1)
