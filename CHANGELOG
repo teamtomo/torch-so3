@@ -1,10 +1,31 @@
-[v0.1.2] - 2024-02-21
+[v0.2.0] - unreleased
+
+### Breaking
+
+- Renamed `out_of_plane_step` keyword argument to `theta_step` in function `get_uniform_euler_angles`.
+- Renamed `in_plane_step` keyword argument to `psi_step` in function `get_uniform_euler_angles`.
+- Added new `phi_step` keyword argument to `get_uniform_euler_angles` function.
+
+### Changes
+
+- Implement new cartesian sampling method for local angles (#11).
+- New tilt-roll axis search functionality (#12.)
+
+[v0.1.4] - 2025-02-27
+
+- Wrap angles to [0, 360) and [0, 180) rather than [-180, 180) and [-90, 90).
+
+[v0.1.3] - 2025-02-26
+
+- Bugfix to returns (phi, theta, psi) as intrinsic ZYZ Euler angles (#10).
+
+[v0.1.2] - 2025-02-21
 
 - Resolved how the high-resolution grid around sample orientations is generated.
 - Renamed the `refine_search` submodule to `local_so3_sampling`.
 - Added the major functions `get_uniform_euler_angles` and `get_local_high_resolution_angles` to the top-level module for ease of access.
 
-[v0.1.1] - 2024-02-19
+[v0.1.1] - 2025-02-19
 
 - Fixed minor issues where order of Euler angles from `get_uniform_euler_angles` was not consistent.
 - Renamed the `hopf_angles` submodule to `uniform_so3_sampling`.

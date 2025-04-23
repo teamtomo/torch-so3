@@ -7,6 +7,7 @@
 [![codecov](https://codecov.io/gh/teamtomo/torch-so3/branch/main/graph/badge.svg)](https://codecov.io/gh/teamtomo/torch-so3)
 
 Generate uniform sets of proper Euler angles (ZYZ format) over the SO(3) group using PyTorch.
+Also includes the functionality to locally sample around orientations.
 Note that Euler angles are returned in the order of $(\phi, \theta, \psi)$.
 
 ## Examples
@@ -45,8 +46,8 @@ A basic example of generating uniform Euler angles in 4.0 and 6.0 degree increme
 from torch_so3 import get_uniform_euler_angles
 
 angles = get_uniform_euler_angles(
-    in_plane_step=4.0,  # units of degrees
-    out_of_plane_step=6.0,
+    psi_step=4.0,  # both in units of degrees
+    theta_step=6.0,
 )
 angles.shape  # (103500, 3)
 ```
