@@ -5,7 +5,7 @@ import platform
 import numpy as np
 import pytest
 
-from torch_so3.base_s2_grid import healpix_sectored_base_grid
+from torch_so3.base_s2_grid import healpix_base_grid, healpix_sectored_base_grid
 from torch_so3.local_so3_sampling import (
     get_local_high_resolution_angles,
     get_roll_angles,
@@ -53,6 +53,15 @@ def test_get_uniform_euler_angles_includes_zero():
 def test_get_uniform_euler_angles_healpix():
     angles = get_uniform_euler_angles(base_grid_method="healpix")
     assert angles.shape == (1658880, 3)
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="healpy is not supported on Windows"
+)
+def test_healpix_base_grid_theta_step_too_fine_raises():
+    """Very small theta_step implies nside >= 36; _nside_from_theta_step raises."""
+    with pytest.raises(ValueError, match="Could not find a valid nside"):
+        healpix_base_grid(theta_step=0.5)
 
 
 def test_get_local_high_resolution_angles():
@@ -226,6 +235,21 @@ def test_get_sectored_euler_angles_psi_sweep_per_sector():
             # phi and theta are constant within this block
             phi_theta = sector_angles[i * n_psi : (i + 1) * n_psi, :2]
             assert (phi_theta == phi_theta[0]).all()
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="healpy is not supported on Windows"
+)
+def test_get_sectored_euler_angles_psi_min_ge_psi_max_single_psi():
+    """When ``psi_min >= psi_max``, use a single ``psi`` value."""
+    angles = get_sectored_euler_angles(
+        nside_coarse=1,
+        nside_fine=2,
+        psi_min=42.0,
+        psi_max=42.0,
+    )
+    assert angles.shape == (12, 4, 3)
+    assert (angles[..., 2] == 42.0).all()
 
 
 @pytest.mark.skipif(

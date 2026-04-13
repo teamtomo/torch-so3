@@ -85,23 +85,29 @@ def uniform_base_grid(
 
 
 def _nside_from_theta_step(theta_step: float) -> int:
-    """Infer the smallest valid HEALPix nside that covers ``theta_step`` resolution."""
+    """Infer the smallest valid HEALPix nside that covers ``theta_step`` resolution.
+
+    Uses ``nside = ceil(sqrt(N/12))`` where ``N`` is the target pixel count from the
+    angular step; this always satisfies ``12 * nside**2 >= N``.  Values ``nside >= 36``
+    are rejected to match the historical cap used elsewhere in this module.
+
+    Parameters
+    ----------
+    theta_step : float
+        Angular step for theta in degrees.
+
+    Returns
+    -------
+    int
+        The smallest valid HEALPix nside that covers ``theta_step`` resolution.
+    """
     theta_step_rad = np.deg2rad(theta_step)
     estimated_num_pixels = int(4 * np.pi / (theta_step_rad**2))
-
-    exact_num_pixels = 0
     nside = int(np.ceil(np.sqrt(estimated_num_pixels / 12)))
-    while nside < 36:
-        exact_num_pixels = 12 * nside**2
-        if exact_num_pixels >= estimated_num_pixels:
-            break
-        nside += 1
-
-    if exact_num_pixels < estimated_num_pixels:
+    if nside >= 36:
         raise ValueError(
             f"Could not find a valid nside for theta_step={theta_step} degrees."
         )
-
     return nside
 
 
