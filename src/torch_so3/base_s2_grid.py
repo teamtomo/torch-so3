@@ -2,7 +2,6 @@
 
 import platform
 import warnings
-from typing import Optional
 
 import numpy as np
 import torch
@@ -181,7 +180,7 @@ def healpix_base_grid(
 
 def healpix_sectored_base_grid(
     nside_coarse: int,
-    nside_fine: Optional[int] = None,
+    nside_fine: int | None = None,
     theta_step: float = 2.5,
     theta_min: float = 0.0,
     theta_max: float = 180.0,
