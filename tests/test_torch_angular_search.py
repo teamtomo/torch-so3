@@ -5,7 +5,11 @@ import platform
 import numpy as np
 import pytest
 
-from torch_so3.base_s2_grid import healpix_base_grid, healpix_sectored_base_grid
+from torch_so3.base_s2_grid import (
+    _nside_from_theta_step,
+    healpix_base_grid,
+    healpix_sectored_base_grid,
+)
 from torch_so3.local_so3_sampling import (
     get_local_high_resolution_angles,
     get_roll_angles,
@@ -58,10 +62,15 @@ def test_get_uniform_euler_angles_healpix():
 @pytest.mark.skipif(
     platform.system() == "Windows", reason="healpy is not supported on Windows"
 )
-def test_healpix_base_grid_theta_step_too_fine_raises():
-    """Very small theta_step implies nside >= 36; _nside_from_theta_step raises."""
-    with pytest.raises(ValueError, match="Could not find a valid nside"):
-        healpix_base_grid(theta_step=0.5)
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="healpy is not supported on Windows"
+)
+def test_healpix_base_grid_fine_theta_step():
+    """Fine theta_step is allowed without the old nside < 36 cap."""
+    nside = _nside_from_theta_step(0.5)
+    assert nside >= 36
+    grid = healpix_base_grid(theta_step=0.5)
+    assert grid.shape == (12 * nside**2, 2)
 
 
 def test_get_local_high_resolution_angles():

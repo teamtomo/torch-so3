@@ -87,8 +87,7 @@ def _nside_from_theta_step(theta_step: float) -> int:
     """Infer the smallest valid HEALPix nside that covers ``theta_step`` resolution.
 
     Uses ``nside = ceil(sqrt(N/12))`` where ``N`` is the target pixel count from the
-    angular step; this always satisfies ``12 * nside**2 >= N``.  Values ``nside >= 36``
-    are rejected to match the historical cap used elsewhere in this module.
+    angular step; this always satisfies ``12 * nside**2 >= N``.
 
     Parameters
     ----------
@@ -103,10 +102,6 @@ def _nside_from_theta_step(theta_step: float) -> int:
     theta_step_rad = np.deg2rad(theta_step)
     estimated_num_pixels = int(4 * np.pi / (theta_step_rad**2))
     nside = int(np.ceil(np.sqrt(estimated_num_pixels / 12)))
-    if nside >= 36:
-        raise ValueError(
-            f"Could not find a valid nside for theta_step={theta_step} degrees."
-        )
     return nside
 
 
